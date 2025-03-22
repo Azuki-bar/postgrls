@@ -24,7 +24,7 @@ func main() {
 	} else {
 		// ファイル引数がない場合はヘルプを表示
 		if flag.NArg() == 0 {
-			fmt.Fprintln(os.Stderr, "Usage: postgirls [options] file...")
+			fmt.Fprintln(os.Stderr, "Usage: postgrls [options] file...")
 			flag.PrintDefaults()
 			os.Exit(1)
 		}
