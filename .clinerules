@@ -1,0 +1,97 @@
+# PostgreSQL RLS Linter ルール
+
+## 概要
+
+このリンターは、PostgreSQLのテーブル定義においてRow Level Security（RLS）の設定が不足している場合に警告を出力します。
+
+## 検証ルール
+
+1. **rls-not-enabled**: テーブルにRLSが有効化されていない場合に警告
+   - `ALTER TABLE テーブル名 ENABLE ROW LEVEL SECURITY;` が必要
+
+2. **rls-no-policy**: RLSは有効化されているが、ポリシーが設定されていない場合に警告
+   - `CREATE POLICY ポリシー名 ON テーブル名 USING (条件);` が必要
+
+## 除外設定
+
+特定のテーブルをRLS検証から除外することができます。
+
+```bash
+# 例: logsテーブルを除外
+go run . -exclude=logs table_def
+
+# 例: 複数のテーブルを除外
+go run . -exclude=logs,audit_trails,metrics table_def_1.sql table_def_2.sql ...
+```
+
+## 出力形式
+
+検証結果はJSON形式で出力されます。reviewdogと互換性があります。
+
+```json
+[
+  {
+    "message": "テーブル 'accounts' にRLSが有効化されていません",
+    "location": {
+      "file": "stdin",
+      "line": 1,
+      "column": 1
+    },
+    "table_name": "accounts",
+    "rule_id": "rls-not-enabled"
+  }
+]
+```
+
+## 実装詳細
+
+1. PostgreSQLのSQLパーサーライブラリ（pganalyze/pg_query_go）を使用してSQLを解析
+2. テーブル作成文（CREATE TABLE）を検出
+3. RLS有効化文（ALTER TABLE ... ENABLE ROW LEVEL SECURITY）を検出
+4. ポリシー作成文（CREATE POLICY）を検出
+5. 各テーブルに対してRLS設定の検証を実行
+6. 検証結果をJSON形式で出力
+7. RLS設定の不足がある場合は非ゼロの終了コード
+
+## 使用例
+
+```bash
+# ファイルを指定してRLS設定をチェック
+go run . schema.sql
+
+# 複数のファイルを指定
+go run . schema1.sql schema2.sql
+
+# 標準入力からSQLを読み込む場合は '-stdin' オプションを指定
+cat schema.sql | go run . -stdin
+
+# 特定のテーブルを除外
+go run . -exclude=logs,audit_trails schema.sql
+```
+
+## 追加機能と注意点
+
+### 複数ファイルの検証
+
+```bash
+# 複数ファイルを一度に検証（テーブル定義とポリシー定義が別ファイルの場合）
+go run . table_def.sql policy_def.sql
+```
+
+### マルチバイト文字のサポート
+
+日本語や絵文字などのマルチバイト文字を含むテーブル名やカラム名もサポートしています。
+
+```sql
+CREATE TABLE "ユーザー" (id int, "名前" text);
+CREATE TABLE "user_😊" (id int, name text);
+```
+
+### 複数ポリシーのサポート
+
+1つのテーブルに対して複数のポリシーを設定することができます。
+
+```sql
+CREATE POLICY manager_policy ON accounts USING (manager = current_user);
+CREATE POLICY department_policy ON accounts USING (department = current_setting('app.department'));
+```
