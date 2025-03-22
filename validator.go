@@ -36,7 +36,7 @@ func ValidateRLS(tables []TableDefinition, rlsEnables []RLSEnableStatement, poli
 		// RLSが有効化されていない場合
 		if info.EnableRLS == nil {
 			results = append(results, LintResult{
-				Message:   "テーブル '" + info.TableName + "' にRLSが有効化されていません",
+				Message:   "Table '" + info.TableName + "' does not have RLS enabled",
 				TableName: info.TableName,
 				RuleID:    "rls-not-enabled",
 				Location: struct {
@@ -52,7 +52,7 @@ func ValidateRLS(tables []TableDefinition, rlsEnables []RLSEnableStatement, poli
 		} else if len(info.Policies) == 0 {
 			// RLSは有効だがポリシーが設定されていない場合
 			results = append(results, LintResult{
-				Message:   "テーブル '" + info.TableName + "' にRLSポリシーが設定されていません",
+				Message:   "Table '" + info.TableName + "' has no RLS policy configured",
 				TableName: info.TableName,
 				RuleID:    "rls-no-policy",
 				Location: struct {

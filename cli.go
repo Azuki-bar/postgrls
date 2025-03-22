@@ -9,8 +9,8 @@ import (
 // ParseFlags はコマンドラインフラグを解析する
 func ParseFlags() (excludedTables []string, useStdin bool) {
 	var excludedTablesStr string
-	flag.StringVar(&excludedTablesStr, "exclude", "", "RLS検証から除外するテーブル（カンマ区切り）")
-	flag.BoolVar(&useStdin, "stdin", false, "標準入力からSQLを読み込む")
+	flag.StringVar(&excludedTablesStr, "exclude", "", "Tables to exclude from RLS validation (comma-separated)")
+	flag.BoolVar(&useStdin, "stdin", false, "Read SQL from standard input")
 	flag.Parse()
 
 	// 除外テーブルのリスト作成

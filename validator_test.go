@@ -30,7 +30,7 @@ func TestValidateRLS_MissingRLSEnable(t *testing.T) {
 	assert.Len(t, result, 1)
 	assert.Equal(t, "accounts", result[0].TableName)
 	assert.Equal(t, "rls-not-enabled", result[0].RuleID)
-	assert.Contains(t, result[0].Message, "RLSが有効化されていません")
+	assert.Contains(t, result[0].Message, "does not have RLS enabled")
 }
 
 func TestValidateRLS_MissingPolicy(t *testing.T) {
@@ -62,7 +62,7 @@ func TestValidateRLS_MissingPolicy(t *testing.T) {
 	assert.Len(t, result, 1)
 	assert.Equal(t, "accounts", result[0].TableName)
 	assert.Equal(t, "rls-no-policy", result[0].RuleID)
-	assert.Contains(t, result[0].Message, "RLSポリシーが設定されていません")
+	assert.Contains(t, result[0].Message, "has no RLS policy configured")
 }
 
 func TestValidateRLS_Complete(t *testing.T) {
