@@ -1,4 +1,4 @@
-module github.com/azuki-bar/postgirls
+module github.com/azuki-bar/postgrls
 
 go 1.24.0
 
