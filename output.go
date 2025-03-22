@@ -16,9 +16,9 @@ func OutputResults(results []LintResult, stdout io.Writer) error {
 	encoder := json.NewEncoder(stdout)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(results); err != nil {
-		return fmt.Errorf("JSON変換に失敗しました: %w", err)
+		return fmt.Errorf("failed to convert to JSON: %w", err)
 	}
-	return fmt.Errorf("RLS設定の不足があります")
+	return fmt.Errorf("missing RLS configuration")
 }
 
 // SetFilename は検証結果のファイル名を設定する

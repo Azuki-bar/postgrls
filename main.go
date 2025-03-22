@@ -24,7 +24,7 @@ func main() {
 	} else {
 		// ファイル引数がない場合はヘルプを表示
 		if flag.NArg() == 0 {
-			fmt.Fprintln(os.Stderr, "使用法: postgirls [オプション] ファイル...")
+			fmt.Fprintln(os.Stderr, "Usage: postgirls [options] file...")
 			flag.PrintDefaults()
 			os.Exit(1)
 		}
@@ -34,7 +34,7 @@ func main() {
 		for _, filename := range flag.Args() {
 			file, err := os.Open(filename)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "ファイルを開けませんでした: %s: %v\n", filename, err)
+				fmt.Fprintf(os.Stderr, "Could not open file: %s: %v\n", filename, err)
 				os.Exit(1)
 			}
 			defer file.Close()
@@ -63,7 +63,7 @@ func main() {
 func RunLinter(options LinterOptions) error {
 	// 入力ソースが空の場合はエラー
 	if len(options.Sources) == 0 {
-		return fmt.Errorf("入力ソースが指定されていません")
+		return fmt.Errorf("no input sources specified")
 	}
 
 	// すべてのソースからテーブル定義、RLS有効化、ポリシーを収集
@@ -75,13 +75,13 @@ func RunLinter(options LinterOptions) error {
 		// SQLの読み込み
 		sqlBytes, err := io.ReadAll(source.Reader)
 		if err != nil {
-			return fmt.Errorf("SQLの読み込みに失敗しました: %s: %w", source.Filename, err)
+			return fmt.Errorf("failed to read SQL: %s: %w", source.Filename, err)
 		}
 
 		// SQLの解析
 		tables, rlsEnables, policies, err := ParseSQL(source.Filename, string(sqlBytes))
 		if err != nil {
-			return fmt.Errorf("SQLの解析に失敗しました: %s: %w", source.Filename, err)
+			return fmt.Errorf("failed to parse SQL: %s: %w", source.Filename, err)
 		}
 
 		// 結果を統合
